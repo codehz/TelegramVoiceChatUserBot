@@ -1,0 +1,36 @@
+{
+  "name": "Telegram Voice Chat Bot",
+  "description": "A simple telegram voice chat bot",
+  "repository": "https://github.com/codehz/TelegramVoiceChatUserBot",
+  "logo": "https://telegram.org/img/t_logo.svg?1",
+  "keywords": ["python", "telegram", "bot", "video"],
+  "env": {
+    "API_ID": {
+      "description": "API_ID get it from my.telegram.org/apps",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "API_HASH get it from my.telegram.org/apps",
+      "required": true
+    },
+    "SESSION_STRING": {
+      "description": "Pyrogram Session String, get it from @SessionGeneratorBot",
+      "required": true
+    },
+    "CHAT_ID": {
+      "description": "ID of chat for debug",
+      "required": true
+    },
+    "formation": {
+      "worker": {
+        "quantity": 1,
+        "size": "free"
+      }
+    },
+    "buildpacks": [
+      {
+        "url": "heroku/python"
+      }
+    ]
+  }
+}
