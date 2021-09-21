@@ -23,7 +23,7 @@ yt_regex = r"^(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)
 
 def init_group_call(func):
     async def wrapper(client, message):
-        group_call = Database.VIDEO_CALL[message.chat.id]
+        group_call = Database.VIDEO_CALL.get(message.chat.id)
         if not group_call:
             group_call = GroupCallFactory(client).get_group_call()
             Database.VIDEO_CALL[message.chat.id] = group_call
@@ -38,12 +38,12 @@ async def send_log(content):
 
 @client.on_message(filters.command("stopstream", "") & base_filter)
 async def stop_stream(_, m, group_call):
-    group_call = Database.VIDEO_CALL[m.chat.id]
+    group_call = Database.VIDEO_CALL.get(m.chat.id)
     if group_call:
         if group_call.is_running:
             await group_call.stop_media()
         await group_call.leave()
-        Database.VIDEO_CALL[m.chat.id] = None
+        Database.VIDEO_CALL.pop(m.chat.id)
 
 @client.on_message(filters.command("stream", "") & base_filter)
 @init_group_call
