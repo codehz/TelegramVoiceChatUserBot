@@ -46,13 +46,13 @@ async def send_log(content):
     await client.send_message(Config.CHAT_ID, content, disable_notification=True, disable_web_page_preview=True)
 
 
-@client.in_message(filters.command("pausestream", "") & base_filter)
+@client.on_message(filters.command("pausestream", "") & base_filter)
 @with_group_call
 async def pause_stream(_, _2, group_call):
     group_call.set_pause(True)
 
 
-@client.in_message(filters.command("resumestream", "") & base_filter)
+@client.on_message(filters.command("resumestream", "") & base_filter)
 @with_group_call
 async def pause_stream(_, _2, group_call):
     group_call.set_pause(False)
