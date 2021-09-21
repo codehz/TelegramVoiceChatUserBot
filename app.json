@@ -3,6 +3,7 @@
   "description": "A simple telegram voice chat bot",
   "repository": "https://github.com/codehz/TelegramVoiceChatUserBot",
   "logo": "https://telegram.org/img/t_logo.svg?1",
+  "stack": "container",
   "keywords": ["python", "telegram", "bot", "video"],
   "env": {
     "API_ID": {
@@ -27,10 +28,5 @@
       "quantity": 1,
       "size": "free"
     }
-  },
-  "buildpacks": [
-    {
-      "url": "heroku/python"
-    }
-  ]
+  }
 }
