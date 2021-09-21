@@ -1,0 +1,5 @@
+tgcrypto
+youtube_dl
+ffmpeg-python
+pytgcalls==3.0.0.dev19
+git+https://github.com/pyrogram/pyrogram@master
