@@ -36,7 +36,7 @@ async def send_log(content):
     await client.send_message(Config.CHAT_ID, content, disable_notification=True, disable_web_page_preview=True)
 
 
-@client.on_message(filters.command("stream", "") & base_filter)
+@client.on_message(filters.command("stopstream", "") & base_filter)
 @init_group_call
 async def stop_stream(_, m):
     if group_call:
