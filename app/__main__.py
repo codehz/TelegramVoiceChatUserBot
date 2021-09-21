@@ -22,6 +22,15 @@ base_filter = filters.outgoing & ~filters.forwarded & ~filters.edited
 yt_regex = r"^(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([\w\-_]+)\&?"
 
 
+def with_group_call(func):
+    async def wrapper(client, message):
+        group_call = Database.VIDEO_CALL.get(message.chat.id)
+        await message.delete()
+        if group_call:
+            return await func(client, message, group_call)
+    return wrapper
+
+
 def init_group_call(func):
     async def wrapper(client, message):
         group_call = Database.VIDEO_CALL.get(message.chat.id)
@@ -37,15 +46,26 @@ async def send_log(content):
     await client.send_message(Config.CHAT_ID, content, disable_notification=True, disable_web_page_preview=True)
 
 
+@client.in_message(filters.command("pausestream", "") & base_filter)
+@with_group_call
+async def pause_stream(_, _2, group_call):
+    group_call.set_pause(True)
+
+
+@client.in_message(filters.command("resumestream", "") & base_filter)
+@with_group_call
+async def pause_stream(_, _2, group_call):
+    group_call.set_pause(False)
+
+
 @client.on_message(filters.command("stopstream", "") & base_filter)
-async def stop_stream(_, m):
-    await m.delete()
-    group_call = Database.VIDEO_CALL.get(m.chat.id)
-    if group_call:
-        if group_call.is_running:
-            await group_call.stop_media()
-        await group_call.leave()
-        Database.VIDEO_CALL.pop(m.chat.id)
+@with_group_call
+async def stop_stream(_, m, group_call):
+    if group_call.is_running:
+        await group_call.stop_media()
+    await group_call.leave()
+    Database.VIDEO_CALL.pop(m.chat.id)
+
 
 @client.on_message(filters.command("stream", "") & base_filter)
 @init_group_call
