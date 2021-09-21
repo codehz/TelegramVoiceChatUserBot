@@ -1,5 +1,5 @@
 import re
-from config import Config
+from config import Config, Database
 from pyrogram import Client, idle, filters
 from pytgcalls import GroupCallFactory
 from youtube_dl import YoutubeDL
@@ -17,18 +17,18 @@ ytdl = YoutubeDL({
 })
 print("login successfully")
 
-group_call = None
 base_filter = filters.outgoing & ~filters.forwarded & ~filters.edited
 yt_regex = r"^(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([\w\-_]+)\&?"
 
 
 def init_group_call(func):
     async def wrapper(client, message):
-        global group_call
+        group_call = Database.VIDEO_CALL[message.chat.id]
         if not group_call:
             group_call = GroupCallFactory(client).get_group_call()
+            Database.VIDEO_CALL[message.chat.id] = group_call
         await message.delete()
-        return await func(client, message)
+        return await func(client, message, group_call)
     return wrapper
 
 
@@ -37,14 +37,17 @@ async def send_log(content):
 
 
 @client.on_message(filters.command("stopstream", "") & base_filter)
-@init_group_call
-async def stop_stream(_, m):
+async def stop_stream(_, m, group_call):
+    group_call = Database.VIDEO_CALL[m.chat.id]
     if group_call:
-        group_call.leave()
+        if group_call.is_running:
+            await group_call.stop_media()
+        await group_call.leave()
+        Database.VIDEO_CALL[m.chat.id] = None
 
 @client.on_message(filters.command("stream", "") & base_filter)
 @init_group_call
-async def start_stream(_, m):
+async def start_stream(_, m, group_call):
     if ' ' not in m.text:
         return
     query = m.text.split(' ', 1)[1]
@@ -68,7 +71,7 @@ async def start_stream(_, m):
     try:
         if not group_call.is_connected:
             await group_call.join(m.chat.id)
-        await group_call.start_video(link, with_audio=True)
+        await group_call.start_video(link, with_audio=True, repeat=False, enable_experimental_lip_sync=True)
         await send_log(f"starting {link}")
     except Exception as e:
         await send_log(f"**An Error Occoured!** \n\nError: `{e}`")
