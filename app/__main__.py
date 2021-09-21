@@ -37,7 +37,7 @@ async def send_log(content):
 
 
 @client.on_message(filters.command("stopstream", "") & base_filter)
-async def stop_stream(_, m, group_call):
+async def stop_stream(_, m):
     group_call = Database.VIDEO_CALL.get(m.chat.id)
     if group_call:
         if group_call.is_running:
