@@ -17,6 +17,7 @@ ytdl = YoutubeDL({
 })
 print("login successfully")
 
+factory = GroupCallFactory(client)
 base_filter = filters.outgoing & ~filters.forwarded & ~filters.edited
 yt_regex = r"^(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([\w\-_]+)\&?"
 
@@ -25,7 +26,7 @@ def init_group_call(func):
     async def wrapper(client, message):
         group_call = Database.VIDEO_CALL.get(message.chat.id)
         if not group_call:
-            group_call = GroupCallFactory(client).get_group_call()
+            group_call = factory.get_group_call()
             Database.VIDEO_CALL[message.chat.id] = group_call
         await message.delete()
         return await func(client, message, group_call)
