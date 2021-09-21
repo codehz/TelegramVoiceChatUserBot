@@ -1,5 +1,4 @@
 import re
-import ffmpeg
 from config import Config
 from pyrogram import Client, idle, filters
 from pytgcalls import GroupCallFactory
