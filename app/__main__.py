@@ -83,8 +83,6 @@ async def start_stream(_, m, group_call):
             formats = meta.get('formats', [meta])
             for f in formats:
                 link = f['url']
-                if f['format_note'] == '1080p':
-                    break
         except Exception as e:
             await send_log(f"**YouTube Download Error!** \n\nError: `{e}`")
             print(e)
